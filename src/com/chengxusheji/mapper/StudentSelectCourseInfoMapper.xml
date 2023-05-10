@@ -1,0 +1,50 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.StudentSelectCourseInfoMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加选课信息记录 -->
+	<insert id="addStudentSelectCourseInfo" parameterType="studentSelectCourseInfo">
+		insert into t_studentSelectCourseInfo(studentNumber,courseNumber) values 
+		(#{studentNumber.studentNumber},#{courseNumber.courseNumber})
+	</insert>
+
+	<!-- 按照查询条件分页查询选课信息记录 -->
+	<select id="queryStudentSelectCourseInfo" resultMap="studentSelectCourseInfoMap" >
+		select t_studentSelectCourseInfo.* from t_studentSelectCourseInfo,t_courseInfo,t_student ${where} and t_studentSelectCourseInfo.studentNumber = t_student.studentNumber and t_studentSelectCourseInfo.courseNumber = t_courseInfo.courseNumber limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="studentSelectCourseInfoMap" type="studentSelectCourseInfo">
+        <id property="selectId" column="selectId" />
+        <association property="studentNumber" column="studentNumber" select="com.chengxusheji.mapper.StudentMapper.getStudent" />
+        <association property="courseNumber" column="courseNumber" select="com.chengxusheji.mapper.CourseInfoMapper.getCourseInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有选课信息记录 -->
+	<select id="queryStudentSelectCourseInfoList" resultMap="studentSelectCourseInfoMap" >
+		select t_studentSelectCourseInfo.* from t_studentSelectCourseInfo,t_courseInfo,t_student ${where} and t_studentSelectCourseInfo.studentNumber = t_student.studentNumber and t_studentSelectCourseInfo.courseNumber = t_courseInfo.courseNumber
+	</select>
+
+    <!-- 按照查询条件的选课信息记录数 -->
+	<select id="queryStudentSelectCourseInfoCount" resultType="int">
+		select count(*) from t_studentSelectCourseInfo,t_courseInfo,t_student ${where} and t_studentSelectCourseInfo.studentNumber = t_student.studentNumber and t_studentSelectCourseInfo.courseNumber = t_courseInfo.courseNumber
+	</select>
+
+	<!-- 根据主键查询某个选课信息记录 -->
+	<select id="getStudentSelectCourseInfo" parameterType="int" resultMap="studentSelectCourseInfoMap">
+		select * from t_studentSelectCourseInfo where t_studentSelectCourseInfo.selectId = #{selectId}
+	</select>
+
+	<!-- 更新选课信息记录 -->
+	<update id="updateStudentSelectCourseInfo" parameterType="studentSelectCourseInfo">
+		update t_studentSelectCourseInfo set studentNumber=#{studentNumber.studentNumber},courseNumber=#{courseNumber.courseNumber} where selectId = #{selectId}
+	</update>
+
+	<!-- 删除选课信息记录 -->
+	<delete id="deleteStudentSelectCourseInfo" parameterType="int">
+		delete from t_studentSelectCourseInfo where selectId=#{selectId}
+	</delete>
+
+</mapper>

@@ -1,0 +1,50 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.ScoreInfoMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加成绩信息记录 -->
+	<insert id="addScoreInfo" parameterType="scoreInfo">
+		insert into t_scoreInfo(studentNumber,courseNumber,scoreValue,studentEvaluate) values 
+		(#{studentNumber.studentNumber},#{courseNumber.courseNumber},#{scoreValue},#{studentEvaluate})
+	</insert>
+
+	<!-- 按照查询条件分页查询成绩信息记录 -->
+	<select id="queryScoreInfo" resultMap="scoreInfoMap" >
+		select t_scoreInfo.* from t_scoreInfo,t_courseInfo,t_student ${where} and t_scoreInfo.studentNumber = t_student.studentNumber and t_scoreInfo.courseNumber = t_courseInfo.courseNumber limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="scoreInfoMap" type="scoreInfo">
+        <id property="scoreId" column="scoreId" />
+        <association property="studentNumber" column="studentNumber" select="com.chengxusheji.mapper.StudentMapper.getStudent" />
+        <association property="courseNumber" column="courseNumber" select="com.chengxusheji.mapper.CourseInfoMapper.getCourseInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有成绩信息记录 -->
+	<select id="queryScoreInfoList" resultMap="scoreInfoMap" >
+		select t_scoreInfo.* from t_scoreInfo,t_courseInfo,t_student ${where} and t_scoreInfo.studentNumber = t_student.studentNumber and t_scoreInfo.courseNumber = t_courseInfo.courseNumber
+	</select>
+
+    <!-- 按照查询条件的成绩信息记录数 -->
+	<select id="queryScoreInfoCount" resultType="int">
+		select count(*) from t_scoreInfo,t_courseInfo,t_student ${where} and t_scoreInfo.studentNumber = t_student.studentNumber and t_scoreInfo.courseNumber = t_courseInfo.courseNumber
+	</select>
+
+	<!-- 根据主键查询某个成绩信息记录 -->
+	<select id="getScoreInfo" parameterType="int" resultMap="scoreInfoMap">
+		select * from t_scoreInfo where t_scoreInfo.scoreId = #{scoreId}
+	</select>
+
+	<!-- 更新成绩信息记录 -->
+	<update id="updateScoreInfo" parameterType="scoreInfo">
+		update t_scoreInfo set studentNumber=#{studentNumber.studentNumber},courseNumber=#{courseNumber.courseNumber},scoreValue=#{scoreValue},studentEvaluate=#{studentEvaluate} where scoreId = #{scoreId}
+	</update>
+
+	<!-- 删除成绩信息记录 -->
+	<delete id="deleteScoreInfo" parameterType="int">
+		delete from t_scoreInfo where scoreId=#{scoreId}
+	</delete>
+
+</mapper>

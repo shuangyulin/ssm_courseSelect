@@ -1,0 +1,49 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.SpecialFieldInfoMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加专业信息记录 -->
+	<insert id="addSpecialFieldInfo" parameterType="specialFieldInfo">
+		insert into t_specialFieldInfo(specialFieldNumber,specialFieldName,specialCollegeNumber,specialBirthDate,specialMan,specialTelephone,specialMemo) values 
+		(#{specialFieldNumber},#{specialFieldName},#{specialCollegeNumber.collegeNumber},#{specialBirthDate},#{specialMan},#{specialTelephone},#{specialMemo})
+	</insert>
+
+	<!-- 按照查询条件分页查询专业信息记录 -->
+	<select id="querySpecialFieldInfo" resultMap="specialFieldInfoMap" >
+		select t_specialFieldInfo.* from t_specialFieldInfo,t_collegeInfo ${where} and t_specialFieldInfo.specialCollegeNumber = t_collegeInfo.collegeNumber limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="specialFieldInfoMap" type="specialFieldInfo">
+        <id property="specialFieldNumber" column="specialFieldNumber" />
+        <association property="specialCollegeNumber" column="specialCollegeNumber" select="com.chengxusheji.mapper.CollegeInfoMapper.getCollegeInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有专业信息记录 -->
+	<select id="querySpecialFieldInfoList" resultMap="specialFieldInfoMap" >
+		select t_specialFieldInfo.* from t_specialFieldInfo,t_collegeInfo ${where} and t_specialFieldInfo.specialCollegeNumber = t_collegeInfo.collegeNumber
+	</select>
+
+    <!-- 按照查询条件的专业信息记录数 -->
+	<select id="querySpecialFieldInfoCount" resultType="int">
+		select count(*) from t_specialFieldInfo,t_collegeInfo ${where} and t_specialFieldInfo.specialCollegeNumber = t_collegeInfo.collegeNumber
+	</select>
+
+	<!-- 根据主键查询某个专业信息记录 -->
+	<select id="getSpecialFieldInfo" parameterType="string" resultMap="specialFieldInfoMap">
+		select * from t_specialFieldInfo where t_specialFieldInfo.specialFieldNumber = #{specialFieldNumber}
+	</select>
+
+	<!-- 更新专业信息记录 -->
+	<update id="updateSpecialFieldInfo" parameterType="specialFieldInfo">
+		update t_specialFieldInfo set specialFieldName=#{specialFieldName},specialCollegeNumber=#{specialCollegeNumber.collegeNumber},specialBirthDate=#{specialBirthDate},specialMan=#{specialMan},specialTelephone=#{specialTelephone},specialMemo=#{specialMemo} where specialFieldNumber = #{specialFieldNumber}
+	</update>
+
+	<!-- 删除专业信息记录 -->
+	<delete id="deleteSpecialFieldInfo" parameterType="string">
+		delete from t_specialFieldInfo where specialFieldNumber=#{specialFieldNumber}
+	</delete>
+
+</mapper>

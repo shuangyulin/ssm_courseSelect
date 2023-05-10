@@ -1,0 +1,48 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.TeacherMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加教师信息记录 -->
+	<insert id="addTeacher" parameterType="teacher">
+		insert into t_teacher(teacherNumber,teacherName,teacherPassword,teacherSex,teacherBirthday,teacherArriveDate,teacherCardNumber,teacherPhone,teacherPhoto,teacherAddress,teacherMemo) values 
+		(#{teacherNumber},#{teacherName},#{teacherPassword},#{teacherSex},#{teacherBirthday},#{teacherArriveDate},#{teacherCardNumber},#{teacherPhone},#{teacherPhoto},#{teacherAddress},#{teacherMemo})
+	</insert>
+
+	<!-- 按照查询条件分页查询教师信息记录 -->
+	<select id="queryTeacher" resultMap="teacherMap" >
+		select t_teacher.* from t_teacher ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="teacherMap" type="teacher">
+        <id property="teacherNumber" column="teacherNumber" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有教师信息记录 -->
+	<select id="queryTeacherList" resultMap="teacherMap" >
+		select t_teacher.* from t_teacher ${where}
+	</select>
+
+    <!-- 按照查询条件的教师信息记录数 -->
+	<select id="queryTeacherCount" resultType="int">
+		select count(*) from t_teacher ${where}
+	</select>
+
+	<!-- 根据主键查询某个教师信息记录 -->
+	<select id="getTeacher" parameterType="string" resultMap="teacherMap">
+		select * from t_teacher where t_teacher.teacherNumber = #{teacherNumber}
+	</select>
+
+	<!-- 更新教师信息记录 -->
+	<update id="updateTeacher" parameterType="teacher">
+		update t_teacher set teacherName=#{teacherName},teacherPassword=#{teacherPassword},teacherSex=#{teacherSex},teacherBirthday=#{teacherBirthday},teacherArriveDate=#{teacherArriveDate},teacherCardNumber=#{teacherCardNumber},teacherPhone=#{teacherPhone},teacherPhoto=#{teacherPhoto},teacherAddress=#{teacherAddress},teacherMemo=#{teacherMemo} where teacherNumber = #{teacherNumber}
+	</update>
+
+	<!-- 删除教师信息记录 -->
+	<delete id="deleteTeacher" parameterType="string">
+		delete from t_teacher where teacherNumber=#{teacherNumber}
+	</delete>
+
+</mapper>

@@ -1,0 +1,49 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.ClassInfoMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加班级信息记录 -->
+	<insert id="addClassInfo" parameterType="classInfo">
+		insert into t_classInfo(classNumber,className,classSpecialFieldNumber,classBirthDate,classTeacherCharge,classTelephone,classMemo) values 
+		(#{classNumber},#{className},#{classSpecialFieldNumber.specialFieldNumber},#{classBirthDate},#{classTeacherCharge},#{classTelephone},#{classMemo})
+	</insert>
+
+	<!-- 按照查询条件分页查询班级信息记录 -->
+	<select id="queryClassInfo" resultMap="classInfoMap" >
+		select t_classInfo.* from t_classInfo,t_specialFieldInfo ${where} and t_classInfo.classSpecialFieldNumber = t_specialFieldInfo.specialFieldNumber limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="classInfoMap" type="classInfo">
+        <id property="classNumber" column="classNumber" />
+        <association property="classSpecialFieldNumber" column="classSpecialFieldNumber" select="com.chengxusheji.mapper.SpecialFieldInfoMapper.getSpecialFieldInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有班级信息记录 -->
+	<select id="queryClassInfoList" resultMap="classInfoMap" >
+		select t_classInfo.* from t_classInfo,t_specialFieldInfo ${where} and t_classInfo.classSpecialFieldNumber = t_specialFieldInfo.specialFieldNumber
+	</select>
+
+    <!-- 按照查询条件的班级信息记录数 -->
+	<select id="queryClassInfoCount" resultType="int">
+		select count(*) from t_classInfo,t_specialFieldInfo ${where} and t_classInfo.classSpecialFieldNumber = t_specialFieldInfo.specialFieldNumber
+	</select>
+
+	<!-- 根据主键查询某个班级信息记录 -->
+	<select id="getClassInfo" parameterType="string" resultMap="classInfoMap">
+		select * from t_classInfo where t_classInfo.classNumber = #{classNumber}
+	</select>
+
+	<!-- 更新班级信息记录 -->
+	<update id="updateClassInfo" parameterType="classInfo">
+		update t_classInfo set className=#{className},classSpecialFieldNumber=#{classSpecialFieldNumber.specialFieldNumber},classBirthDate=#{classBirthDate},classTeacherCharge=#{classTeacherCharge},classTelephone=#{classTelephone},classMemo=#{classMemo} where classNumber = #{classNumber}
+	</update>
+
+	<!-- 删除班级信息记录 -->
+	<delete id="deleteClassInfo" parameterType="string">
+		delete from t_classInfo where classNumber=#{classNumber}
+	</delete>
+
+</mapper>

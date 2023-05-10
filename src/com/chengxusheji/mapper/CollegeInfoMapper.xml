@@ -1,0 +1,48 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.CollegeInfoMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加学院信息记录 -->
+	<insert id="addCollegeInfo" parameterType="collegeInfo">
+		insert into t_collegeInfo(collegeNumber,collegeName,collegeBirthDate,collegeMan,collegeTelephone,collegeMemo) values 
+		(#{collegeNumber},#{collegeName},#{collegeBirthDate},#{collegeMan},#{collegeTelephone},#{collegeMemo})
+	</insert>
+
+	<!-- 按照查询条件分页查询学院信息记录 -->
+	<select id="queryCollegeInfo" resultMap="collegeInfoMap" >
+		select t_collegeInfo.* from t_collegeInfo ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="collegeInfoMap" type="collegeInfo">
+        <id property="collegeNumber" column="collegeNumber" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有学院信息记录 -->
+	<select id="queryCollegeInfoList" resultMap="collegeInfoMap" >
+		select t_collegeInfo.* from t_collegeInfo ${where}
+	</select>
+
+    <!-- 按照查询条件的学院信息记录数 -->
+	<select id="queryCollegeInfoCount" resultType="int">
+		select count(*) from t_collegeInfo ${where}
+	</select>
+
+	<!-- 根据主键查询某个学院信息记录 -->
+	<select id="getCollegeInfo" parameterType="string" resultMap="collegeInfoMap">
+		select * from t_collegeInfo where t_collegeInfo.collegeNumber = #{collegeNumber}
+	</select>
+
+	<!-- 更新学院信息记录 -->
+	<update id="updateCollegeInfo" parameterType="collegeInfo">
+		update t_collegeInfo set collegeName=#{collegeName},collegeBirthDate=#{collegeBirthDate},collegeMan=#{collegeMan},collegeTelephone=#{collegeTelephone},collegeMemo=#{collegeMemo} where collegeNumber = #{collegeNumber}
+	</update>
+
+	<!-- 删除学院信息记录 -->
+	<delete id="deleteCollegeInfo" parameterType="string">
+		delete from t_collegeInfo where collegeNumber=#{collegeNumber}
+	</delete>
+
+</mapper>
